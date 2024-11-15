@@ -17,8 +17,7 @@ data class Account (
     @Column(name = "ACCOUNT_SEQ")
     var id:Long? = null,
     
-    @Column(name = "AMOUNT", nullable = false)
-    @ColumnDefault("0")
+    @Column(name = "AMOUNT", nullable = false, columnDefinition = "INT DEFAULT 0 CHECK (amount >= 0)")
     var amount:BigInteger,
 
     @Column(name = "CREATE_DT", nullable = false)
