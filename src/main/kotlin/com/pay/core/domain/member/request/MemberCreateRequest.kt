@@ -1,4 +1,6 @@
 package com.pay.core.domain.member.request
 
-class MemberCreateRequest {
+data class MemberCreateRequest(
+    val name: String
+) {
 }

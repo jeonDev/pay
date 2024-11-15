@@ -7,6 +7,6 @@ import java.util.Optional
 
 interface MemberService {
 
-    fun create(memberCreateRequest: MemberCreateRequest): MemberCreateResponse
+    fun create(request: MemberCreateRequest): MemberCreateResponse
     fun findByMember(id:Long):Optional<Member>
 }

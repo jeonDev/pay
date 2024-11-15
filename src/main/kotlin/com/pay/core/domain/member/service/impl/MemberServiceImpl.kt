@@ -16,13 +16,15 @@ class MemberServiceImpl(
 ):MemberService {
 
     @Transactional
-    override fun create(memberCreateRequest: MemberCreateRequest): MemberCreateResponse {
-        val member:Member = Member(
-            name = "a",
+    override fun create(request: MemberCreateRequest): MemberCreateResponse {
+        val member = Member(
+            name = request.name,
             createDt = LocalDateTime.now()
         )
         memberRepository.save(member)
-        return MemberCreateResponse()
+        return MemberCreateResponse(
+            name = member.name
+        )
     }
 
     @Transactional(readOnly = true)
