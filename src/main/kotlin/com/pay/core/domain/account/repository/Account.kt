@@ -29,10 +29,15 @@ data class Account (
     lateinit var member:Member
 
 
-    fun transaction(transactionType: TransactionType, amount:BigInteger) {
+    fun transaction(transactionType: TransactionType, amount:BigInteger):AccountHistory {
         if (transactionType == TransactionType.DEPOSIT) {
             this.amount = this.amount + amount;
-            return
+            return AccountHistory(
+                transactionType = transactionType,
+                createDt = LocalDateTime.now(),
+                amount = amount,
+                balance = this.amount
+            )
         }
 
         if (transactionType == TransactionType.WITHDRAW) {
@@ -41,7 +46,14 @@ data class Account (
             }
 
             this.amount = this.amount - amount
-            return
+            return AccountHistory(
+                transactionType = transactionType,
+                createDt = LocalDateTime.now(),
+                amount = amount,
+                balance = this.amount
+            )
         }
+
+        throw RuntimeException()
     }
 }

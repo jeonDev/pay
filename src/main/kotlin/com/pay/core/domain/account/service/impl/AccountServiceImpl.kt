@@ -6,6 +6,7 @@ import com.pay.core.domain.account.request.AccountCreateRequest
 import com.pay.core.domain.account.request.AccountTransactionRequest
 import com.pay.core.domain.account.response.AccountCreateResponse
 import com.pay.core.domain.account.response.AccountTransactionResponse
+import com.pay.core.domain.account.service.AccountHistoryService
 import com.pay.core.domain.account.service.AccountService
 import com.pay.core.domain.member.service.MemberService
 import org.springframework.stereotype.Service
@@ -15,6 +16,7 @@ import java.time.LocalDateTime
 @Service
 class AccountServiceImpl(
     val accountRepository: AccountRepository,
+    val accountHistoryService: AccountHistoryService,
     val memberService: MemberService
 ):AccountService {
 
@@ -34,9 +36,10 @@ class AccountServiceImpl(
 
         val account = accountRepository.findByMember(member).orElseThrow()
 
-        account.transaction(request.transactionType, request.amount)
+        val accountHistory = account.transaction(request.transactionType, request.amount)
 
         accountRepository.save(account)
+        accountHistoryService.create(accountHistory)
 
         return AccountTransactionResponse(
             transactionType = request.transactionType
