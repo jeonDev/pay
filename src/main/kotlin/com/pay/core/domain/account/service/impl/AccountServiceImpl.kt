@@ -30,7 +30,9 @@ class AccountServiceImpl(
         )
         account.member = member
         accountRepository.save(account)
-        return AccountCreateResponse()
+        return AccountCreateResponse(
+            amount = account.amount
+        )
     }
 
     @Transactional
