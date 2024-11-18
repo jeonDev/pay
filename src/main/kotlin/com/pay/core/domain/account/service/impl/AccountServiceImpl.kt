@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigInteger
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class AccountServiceImpl(
@@ -47,7 +48,14 @@ class AccountServiceImpl(
         accountHistoryRepository.save(accountHistory)
 
         return AccountTransactionResponse(
-            transactionType = request.transactionType
+            transactionType = request.transactionType,
+            balance = account.amount
         )
+    }
+
+    @Transactional(readOnly = true)
+    override fun findByMemberSeq(memberSeq: Long): Optional<Account> {
+        val member = memberService.findByMember(memberSeq).orElseThrow()
+        return accountRepository.findByMember(member)
     }
 }

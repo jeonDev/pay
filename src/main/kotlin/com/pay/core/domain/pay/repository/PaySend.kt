@@ -1,5 +1,6 @@
 package com.pay.core.domain.pay.repository
 
+import com.pay.core.domain.account.repository.Account
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.DynamicUpdate
@@ -21,5 +22,13 @@ data class PaySend(
     @Column(name = "FEE_AMOUNT", nullable = false)
     @ColumnDefault("0")
     var feeAmount:BigInteger
-    // TODO: 보냄 받음
-)
+
+) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SEND_ACCOUNT_SEQ")
+    lateinit var sendAccount:Account
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RECEIVE_ACCOUNT_SEQ")
+    lateinit var receiveAccount:Account
+}
