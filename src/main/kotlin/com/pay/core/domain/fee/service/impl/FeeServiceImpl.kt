@@ -28,20 +28,14 @@ class FeeServiceImpl(
 
     override fun findFeeAmount(feeType: FeeType, amount: BigDecimal): BigDecimal {
         val optionalFee = feeRepository.findByFeeTypeAndUseYn(feeType, true)
-
         if (optionalFee.isEmpty) return BigDecimal.ZERO
-
         val fee = optionalFee.get()
 
-        if (fee.feeWay == FeeWay.NONE) {
-            return BigDecimal.ZERO
-        } else if (fee.feeWay == FeeWay.RATE) {
-            return amount.multiply(fee.fee).divide(BigDecimal(100))
-        } else if (fee.feeWay == FeeWay.FIXED) {
-            return fee.fee
+        return when (fee.feeWay) {
+            FeeWay.NONE -> BigDecimal.ZERO
+            FeeWay.RATE -> amount.multiply(fee.fee).divide(BigDecimal(100))
+            FeeWay.FIXED -> fee.fee
         }
-
-        throw RuntimeException()
     }
 
 }
