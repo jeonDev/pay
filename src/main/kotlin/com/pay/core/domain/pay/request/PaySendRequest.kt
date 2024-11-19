@@ -9,10 +9,10 @@ data class PaySendRequest(
     val sendMemberSeq: Long,
     val receiveMemberSeq: Long
 ) {
-    fun toEntity(sendAccount:Account, receiveAccount:Account):PaySend {
+    fun toEntity(sendAccount:Account, receiveAccount:Account, feeAmount:BigInteger):PaySend {
         val paySend = PaySend(
             amount = amount,
-            feeAmount = BigInteger.ZERO
+            feeAmount = feeAmount
         )
         paySend.sendAccount = sendAccount
         paySend.receiveAccount = receiveAccount

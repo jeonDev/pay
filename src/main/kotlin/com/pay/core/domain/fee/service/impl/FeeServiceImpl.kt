@@ -2,7 +2,6 @@ package com.pay.core.domain.fee.service.impl
 
 import com.pay.core.domain.fee.repository.FeeRepository
 import com.pay.core.domain.fee.request.FeeCreateRequest
-import com.pay.core.domain.fee.response.FeeResponse
 import com.pay.core.domain.fee.service.FeeService
 import com.pay.core.domain.type.FeeType
 import com.pay.core.domain.type.FeeWay
@@ -27,20 +26,22 @@ class FeeServiceImpl(
         }
     }
 
-    override fun findByFeeType(feeType: FeeType):FeeResponse {
+    override fun findFeeAmount(feeType: FeeType, amount: BigDecimal): BigDecimal {
         val optionalFee = feeRepository.findByFeeTypeAndUseYn(feeType, true)
 
-        if (optionalFee.isEmpty) {
-            return FeeResponse(
-                feeWay = FeeWay.NONE,
-                fee = BigDecimal.ZERO
-            )
-        } else {
-            val fee = optionalFee.get()
-            return FeeResponse(
-                feeWay = fee.feeWay,
-                fee = fee.fee
-            )
+        if (optionalFee.isEmpty) return BigDecimal.ZERO
+
+        val fee = optionalFee.get()
+
+        if (fee.feeWay == FeeWay.NONE) {
+            return BigDecimal.ZERO
+        } else if (fee.feeWay == FeeWay.RATE) {
+            return amount.multiply(fee.fee).divide(BigDecimal(100))
+        } else if (fee.feeWay == FeeWay.FIXED) {
+            return fee.fee
         }
+
+        throw RuntimeException()
     }
+
 }
