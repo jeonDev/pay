@@ -42,7 +42,7 @@ class AccountServiceImpl(
 
         val account = accountRepository.findByMember(member).orElseThrow()
 
-        val accountHistory = account.transaction(request.transactionType, request.amount)
+        val accountHistory = account.transaction(request.transactionType, request.amount, request.payType, request.paySeq)
 
         accountRepository.save(account)
         accountHistoryRepository.save(accountHistory)

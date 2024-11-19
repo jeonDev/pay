@@ -1,5 +1,6 @@
 package com.pay.core.domain.account.repository
 
+import com.pay.core.domain.type.PayType
 import com.pay.core.domain.type.TransactionType
 import jakarta.persistence.*
 import java.math.BigInteger
@@ -23,5 +24,12 @@ data class AccountHistory(
     var balance: BigInteger,
 
     @Column(name = "CREATE_DT")
-    val createDt: LocalDateTime
+    val createDt: LocalDateTime,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "PAY_TYPE")
+    val payType: PayType,
+
+    @Column(name = "PAY_SEQ")
+    val paySeq:Long?
 )

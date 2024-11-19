@@ -1,14 +1,17 @@
 package com.pay.core.domain.pay.service.impl
 
 import com.pay.core.domain.account.request.AccountTransactionRequest
+import com.pay.core.domain.account.response.AccountTransactionResponse
 import com.pay.core.domain.account.service.AccountService
 import com.pay.core.domain.pay.repository.PaySendRepository
 import com.pay.core.domain.pay.request.PaySendRequest
 import com.pay.core.domain.pay.response.PaySendResponse
 import com.pay.core.domain.pay.service.PaySendService
+import com.pay.core.domain.type.PayType
 import com.pay.core.domain.type.TransactionType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigInteger
 
 @Service
 class PaySendServiceImpl(
@@ -26,19 +29,9 @@ class PaySendServiceImpl(
 
         val entity = paySendRepository.save(request.toEntity(sendAccount, receiveAccount))
 
-        val sendAccountRequest = AccountTransactionRequest(
-            amount = entity.amount,
-            transactionType = TransactionType.WITHDRAW,
-            memberSeq = request.sendMemberSeq
-        )
-        val sendAccountResponse = accountService.transaction(sendAccountRequest)
 
-        val receiveAccountRequest = AccountTransactionRequest(
-            amount = entity.amount,
-            transactionType = TransactionType.DEPOSIT,
-            memberSeq = request.receiveMemberSeq
-        )
-        val receiveAccountResponse = accountService.transaction(receiveAccountRequest)
+        val sendAccountResponse = this.transaction(entity.amount, TransactionType.WITHDRAW, request.sendMemberSeq, PayType.PAY_SEND, entity.id)
+        val receiveAccountResponse = this.transaction(entity.amount, TransactionType.DEPOSIT, request.receiveMemberSeq, PayType.PAY_SEND, entity.id)
 
         return PaySendResponse(
             success = true,
@@ -46,5 +39,16 @@ class PaySendServiceImpl(
             feeAmount = entity.feeAmount,
             balance = sendAccountResponse.balance
         )
+    }
+
+    private fun transaction(amount: BigInteger, transactionType: TransactionType, memberSeq:Long, payType:PayType, paySeq:Long?): AccountTransactionResponse {
+        val transactionRequest = AccountTransactionRequest(
+            amount = amount,
+            transactionType = transactionType,
+            memberSeq = memberSeq,
+            payType = payType,
+            paySeq = paySeq
+        )
+        return accountService.transaction(transactionRequest)
     }
 }

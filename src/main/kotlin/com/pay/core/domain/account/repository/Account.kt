@@ -1,9 +1,9 @@
 package com.pay.core.domain.account.repository
 
 import com.pay.core.domain.member.repository.Member
+import com.pay.core.domain.type.PayType
 import com.pay.core.domain.type.TransactionType
 import jakarta.persistence.*
-import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.DynamicUpdate
 import java.math.BigInteger
 import java.time.LocalDateTime
@@ -29,14 +29,16 @@ data class Account (
     lateinit var member:Member
 
 
-    fun transaction(transactionType: TransactionType, amount:BigInteger):AccountHistory {
+    fun transaction(transactionType: TransactionType, amount:BigInteger, payType: PayType, paySeq:Long?):AccountHistory {
         if (transactionType == TransactionType.DEPOSIT) {
             this.amount = this.amount + amount;
             return AccountHistory(
                 transactionType = transactionType,
                 createDt = LocalDateTime.now(),
                 amount = amount,
-                balance = this.amount
+                balance = this.amount,
+                payType = payType,
+                paySeq = paySeq
             )
         }
 
@@ -50,7 +52,9 @@ data class Account (
                 transactionType = transactionType,
                 createDt = LocalDateTime.now(),
                 amount = amount,
-                balance = this.amount
+                balance = this.amount,
+                payType = payType,
+                paySeq = paySeq
             )
         }
 
