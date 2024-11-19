@@ -11,6 +11,8 @@ import com.pay.core.domain.pay.service.PaySendService
 import com.pay.core.domain.type.FeeType
 import com.pay.core.domain.type.PayType
 import com.pay.core.domain.type.TransactionType
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigInteger
@@ -21,10 +23,11 @@ class PaySendServiceImpl(
     val accountService: AccountService,
     val feeService: FeeService
 ):PaySendService {
+    private val log: Logger by lazy { LoggerFactory.getLogger(this::class.java) }
 
     @Transactional
     override fun send(request: PaySendRequest): PaySendResponse {
-
+        log.info("송금 요청 : {} -> {} : ({})", request.sendMemberSeq, request.receiveMemberSeq, request.amount)
         val sendAccount = accountService.findByMemberSeq(request.sendMemberSeq).orElseThrow()
 
         val feeAmount = feeService.findFeeAmount(FeeType.PAY_SEND, request.amount.toBigDecimal())

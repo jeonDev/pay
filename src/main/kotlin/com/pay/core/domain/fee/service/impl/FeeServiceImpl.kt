@@ -5,6 +5,8 @@ import com.pay.core.domain.fee.request.FeeCreateRequest
 import com.pay.core.domain.fee.service.FeeService
 import com.pay.core.domain.type.FeeType
 import com.pay.core.domain.type.FeeWay
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -13,9 +15,11 @@ import java.math.BigDecimal
 class FeeServiceImpl(
     val feeRepository: FeeRepository
 ):FeeService {
+    private val log:Logger by lazy { LoggerFactory.getLogger(this::class.java) }
 
     @Transactional
     override fun create(request: FeeCreateRequest) {
+        log.info("수수료 정책 추가 : {} {} {}", request.feeType, request.feeWay, request.fee)
         val optionalFee = feeRepository.findByFeeTypeAndUseYn(request.feeType, true)
         if (optionalFee.isPresent) {
             val fee = optionalFee.get()
@@ -27,6 +31,7 @@ class FeeServiceImpl(
     }
 
     override fun findFeeAmount(feeType: FeeType, amount: BigDecimal): BigDecimal {
+        log.info("수수료 가져오기 : {} {}", feeType, amount)
         val optionalFee = feeRepository.findByFeeTypeAndUseYn(feeType, true)
         if (optionalFee.isEmpty) return BigDecimal.ZERO
         val fee = optionalFee.get()
