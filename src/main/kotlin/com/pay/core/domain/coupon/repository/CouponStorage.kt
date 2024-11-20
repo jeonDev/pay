@@ -25,11 +25,7 @@ data class CouponStorage(
 ) {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_SEQ")
-    lateinit var member: Member
-
-    fun setMember(member: Member) {
-        this.member = member
-    }
+    lateinit var member:Member
 
     fun couponUse() {
         if (this.useYn) throw RuntimeException()

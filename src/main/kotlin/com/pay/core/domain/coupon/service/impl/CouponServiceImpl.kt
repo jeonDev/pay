@@ -62,7 +62,7 @@ class CouponServiceImpl(
             createDt = LocalDateTime.now(),
             useYn = false,
         )
-        couponStorage.setMember(member)
+        couponStorage.member = member
         couponStorageRepository.save(couponStorage)
 
         return CouponIssueResponse(
