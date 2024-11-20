@@ -7,7 +7,8 @@ import java.math.BigInteger
 data class PaySendRequest(
     val amount: BigInteger,
     val sendMemberSeq: Long,
-    val receiveMemberSeq: Long
+    val receiveMemberSeq: Long,
+    val couponStorageSeq:Long?
 ) {
     fun toEntity(sendAccount:Account, receiveAccount:Account, feeAmount:BigInteger):PaySend {
         val paySend = PaySend(

@@ -3,6 +3,7 @@ package com.pay.core.domain.pay.service.impl
 import com.pay.core.domain.account.request.AccountTransactionRequest
 import com.pay.core.domain.account.response.AccountTransactionResponse
 import com.pay.core.domain.account.service.AccountService
+import com.pay.core.domain.coupon.service.CouponService
 import com.pay.core.domain.fee.service.FeeService
 import com.pay.core.domain.pay.repository.PaySendRepository
 import com.pay.core.domain.pay.request.PaySendRequest
@@ -15,23 +16,24 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.math.BigInteger
 
 @Service
 class PaySendServiceImpl(
     val paySendRepository: PaySendRepository,
     val accountService: AccountService,
-    val feeService: FeeService
+    val feeService: FeeService,
+    val couponService: CouponService
 ):PaySendService {
     private val log: Logger by lazy { LoggerFactory.getLogger(this::class.java) }
 
     @Transactional
     override fun send(request: PaySendRequest): PaySendResponse {
-        log.info("송금 요청 : {} -> {} : ({})", request.sendMemberSeq, request.receiveMemberSeq, request.amount)
+        log.info("송금 요청 : {} -> {} : ({}) {}", request.sendMemberSeq, request.receiveMemberSeq, request.amount, request.couponStorageSeq)
         val sendAccount = accountService.findByMemberSeq(request.sendMemberSeq).orElseThrow()
 
-        val feeAmount = feeService.findFeeAmount(FeeType.PAY_SEND, request.amount.toBigDecimal())
-            .toBigInteger()
+        val feeAmount:BigInteger = getFeeAmount(request.couponStorageSeq, request.amount.toBigDecimal())
         val amount = request.amount.add(feeAmount)
         if (sendAccount.amount < amount) throw RuntimeException("잔액 부족")
 
@@ -60,4 +62,14 @@ class PaySendServiceImpl(
         )
         return accountService.transaction(transactionRequest)
     }
+
+    private fun getFeeAmount(couponStorageSeq:Long?, amount:BigDecimal):BigInteger =
+        couponStorageSeq?.let {
+            // TODO: couponType 맞는지 체크 필요 (그러려면 조회 후 사용으로 바꿔야 하지 않을까)
+            couponService.couponUse(it)
+            BigInteger.ZERO
+        } ?: run {
+            feeService.findFeeAmount(FeeType.PAY_SEND, amount)
+                .toBigInteger()
+        }
 }
