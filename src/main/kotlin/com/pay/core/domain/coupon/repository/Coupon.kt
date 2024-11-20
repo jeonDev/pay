@@ -25,6 +25,9 @@ data class Coupon(
     }
 
     fun couponIssue() {
+        if (this.count - count < 0)
+            throw RuntimeException()
+
         this.count -= count
     }
 }
