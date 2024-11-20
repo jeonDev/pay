@@ -20,56 +20,37 @@ class CouponServiceImpl(
 
     @Transactional
     override fun create(request: CouponCreateRequest): CouponCreateResponse {
-        val optionalCoupon = couponRepository.findByCouponType(request.couponType)
+        val coupon = couponRepository.findByCouponType(request.couponType)
+            .orElseGet { Coupon(couponType = request.couponType, count = 0) }
+            .apply { couponAdd(request.count) }
 
-        if (optionalCoupon.isPresent) {
-            val coupon = optionalCoupon.get()
-            coupon.couponAdd(request.count)
+        couponRepository.save(coupon)
 
-            val couponHistory = CouponHistory(
+        couponHistoryRepository.save(
+            CouponHistory(
                 couponType = request.couponType,
                 count = request.count
             )
+        )
 
-            couponRepository.save(coupon)
-            couponHistoryRepository.save(couponHistory)
-            return CouponCreateResponse(
-                couponType = coupon.couponType,
-                count = coupon.count
-            )
-        } else {
-            val coupon = Coupon(
-                couponType = request.couponType,
-                count = request.count
-            )
-            couponRepository.save(coupon)
-            val couponHistory = CouponHistory(
-                couponType = request.couponType,
-                count = request.count
-            )
-            couponHistoryRepository.save(couponHistory)
-            return CouponCreateResponse(
-                couponType = coupon.couponType,
-                count = coupon.count
-            )
-        }
+        return CouponCreateResponse(
+            couponType = coupon.couponType,
+            count = coupon.count
+        )
     }
     
     @Transactional
     override fun issue(request: CouponIssueRequest): CouponIssueResponse {
         val coupon = couponRepository.findByCouponType(request.couponType)
             .orElseThrow()
-
+            .apply { couponIssue() }
         // TODO: 고객번호 넣기 & 고객쿠폰 테이블 추가
-        coupon.couponIssue()
 
         couponRepository.save(coupon)
-
-        val couponHistory = CouponHistory(
+        couponHistoryRepository.save(CouponHistory(
             couponType = coupon.couponType,
             count = 1L
-        )
-        couponHistoryRepository.save(couponHistory)
+        ))
 
         return CouponIssueResponse(
             couponType = coupon.couponType,
