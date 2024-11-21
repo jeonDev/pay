@@ -40,7 +40,7 @@ class PaySendServiceImpl(
 
         val receiveAccount = accountService.findByMemberSeq(request.receiveMemberSeq)
 
-        val entity = paySendRepository.save(request.toEntity(sendAccount, receiveAccount, feeAmount))
+        val entity = paySendRepository.save(sendAccount, receiveAccount, request.amount, feeAmount)
 
         val sendAccountResponse = this.transaction(amount, TransactionType.WITHDRAW, request.sendMemberSeq, PayType.PAY_SEND, entity.id)
         val receiveAccountResponse = this.transaction(amount, TransactionType.DEPOSIT, request.receiveMemberSeq, PayType.PAY_SEND, entity.id)

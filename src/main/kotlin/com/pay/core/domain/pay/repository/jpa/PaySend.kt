@@ -1,4 +1,4 @@
-package com.pay.core.domain.pay.repository
+package com.pay.core.domain.pay.repository.jpa
 
 import com.pay.core.domain.account.repository.jpa.Account
 import jakarta.persistence.*
