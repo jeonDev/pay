@@ -30,34 +30,16 @@ data class Account (
 
 
     fun transaction(transactionType: TransactionType, amount:BigInteger, payType: PayType, paySeq:Long?):AccountHistory {
-        if (transactionType == TransactionType.DEPOSIT) {
-            this.amount = this.amount + amount;
-            return AccountHistory(
-                transactionType = transactionType,
-                createDt = LocalDateTime.now(),
-                amount = amount,
-                balance = this.amount,
-                payType = payType,
-                paySeq = paySeq
-            )
-        }
+        this.amount = transactionType.calculation(this.amount, amount)
+        if (this.amount < BigInteger.ZERO) throw RuntimeException()
 
-        if (transactionType == TransactionType.WITHDRAW) {
-            if (this.amount < amount) {
-                throw RuntimeException()
-            }
-
-            this.amount = this.amount - amount
-            return AccountHistory(
-                transactionType = transactionType,
-                createDt = LocalDateTime.now(),
-                amount = amount,
-                balance = this.amount,
-                payType = payType,
-                paySeq = paySeq
-            )
-        }
-
-        throw RuntimeException()
+        return AccountHistory(
+            transactionType = transactionType,
+            createDt = LocalDateTime.now(),
+            amount = amount,
+            balance = this.amount,
+            payType = payType,
+            paySeq = paySeq
+        )
     }
 }
