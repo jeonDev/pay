@@ -8,6 +8,7 @@ import com.pay.core.domain.coupon.response.CouponIssueResponse
 import com.pay.core.domain.coupon.response.CouponUseResponse
 import com.pay.core.domain.coupon.service.CouponService
 import com.pay.core.domain.member.service.MemberService
+import com.pay.core.domain.pay.response.CouponStorageResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
