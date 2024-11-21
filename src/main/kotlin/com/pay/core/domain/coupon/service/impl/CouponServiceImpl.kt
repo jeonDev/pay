@@ -71,6 +71,14 @@ class CouponServiceImpl(
         )
     }
 
+    override fun findByCouponStorageSeq(couponStorageSeq: Long): CouponStorageResponse {
+        return couponStorageRepository.findByIdAndUseYn(couponStorageSeq, false) .orElseThrow()
+            .let { CouponStorageResponse(
+                couponStorageSeq = it.id,
+                couponType = it.couponType
+            ) }
+    }
+
     override fun couponUse(couponStorageSeq: Long): CouponUseResponse {
         return couponStorageRepository.findById(couponStorageSeq)
             .orElseThrow()

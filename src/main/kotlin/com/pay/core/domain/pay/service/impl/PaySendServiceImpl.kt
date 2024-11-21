@@ -9,6 +9,7 @@ import com.pay.core.domain.pay.repository.PaySendRepository
 import com.pay.core.domain.pay.request.PaySendRequest
 import com.pay.core.domain.pay.response.PaySendResponse
 import com.pay.core.domain.pay.service.PaySendService
+import com.pay.core.domain.type.CouponType.FEE_AMOUNT_FREE
 import com.pay.core.domain.type.FeeType
 import com.pay.core.domain.type.PayType
 import com.pay.core.domain.type.TransactionType
@@ -65,9 +66,15 @@ class PaySendServiceImpl(
 
     private fun getFeeAmount(couponStorageSeq:Long?, amount:BigDecimal):BigInteger =
         couponStorageSeq?.let {
-            // TODO: couponType 맞는지 체크 필요 (그러려면 조회 후 사용으로 바꿔야 하지 않을까)
-            couponService.couponUse(it)
-            BigInteger.ZERO
+            val couponStorageResponse = couponService.findByCouponStorageSeq(couponStorageSeq)
+
+            when (couponStorageResponse.couponType) {
+                FEE_AMOUNT_FREE -> {
+                    couponService.couponUse(it)
+                    return BigInteger.ZERO
+                }
+                else -> throw RuntimeException()
+            }
         } ?: run {
             feeService.findFeeAmount(FeeType.PAY_SEND, amount)
                 .toBigInteger()
