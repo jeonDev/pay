@@ -1,4 +1,4 @@
-package com.pay.core.domain.coupon.repository
+package com.pay.core.domain.coupon.repository.jpa
 
 import com.pay.core.domain.member.repository.Member
 import com.pay.core.domain.type.CouponType

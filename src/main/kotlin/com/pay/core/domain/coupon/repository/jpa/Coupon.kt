@@ -1,4 +1,4 @@
-package com.pay.core.domain.coupon.repository
+package com.pay.core.domain.coupon.repository.jpa
 
 import com.pay.core.domain.type.CouponType
 import jakarta.persistence.*
@@ -24,10 +24,9 @@ data class Coupon(
         this.count += count
     }
 
-    fun couponIssue() {
-        if (this.count - count < 0)
-            throw RuntimeException()
-
+    fun couponIssue(count:Long) {
         this.count -= count
+        if (this.count < 0)
+            throw RuntimeException()
     }
 }

@@ -1,6 +1,8 @@
 package com.pay.core.domain.coupon.service.impl
 
-import com.pay.core.domain.coupon.repository.*
+import com.pay.core.domain.coupon.repository.CouponHistoryRepository
+import com.pay.core.domain.coupon.repository.CouponRepository
+import com.pay.core.domain.coupon.repository.CouponStorageRepository
 import com.pay.core.domain.coupon.request.CouponCreateRequest
 import com.pay.core.domain.coupon.request.CouponIssueRequest
 import com.pay.core.domain.coupon.response.CouponCreateResponse
@@ -11,7 +13,6 @@ import com.pay.core.domain.member.service.MemberService
 import com.pay.core.domain.pay.response.CouponStorageResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Service
 class CouponServiceImpl(
@@ -23,18 +24,8 @@ class CouponServiceImpl(
 
     @Transactional
     override fun create(request: CouponCreateRequest): CouponCreateResponse {
-        val coupon = couponRepository.findByCouponType(request.couponType)
-            .orElseGet { Coupon(couponType = request.couponType, count = 0) }
-            .apply { couponAdd(request.count) }
-
-        couponRepository.save(coupon)
-
-        couponHistoryRepository.save(
-            CouponHistory(
-                couponType = request.couponType,
-                count = request.count
-            )
-        )
+        val coupon = couponRepository.couponAdd(request.couponType, request.count)
+        couponHistoryRepository.couponHistoryAdd(coupon.couponType, coupon.count)
 
         return CouponCreateResponse(
             couponType = coupon.couponType,
@@ -44,27 +35,13 @@ class CouponServiceImpl(
     
     @Transactional
     override fun issue(request: CouponIssueRequest): CouponIssueResponse {
-        val coupon = couponRepository.findByCouponType(request.couponType)
-            .orElseThrow()
-            .apply { couponIssue() }
+        val coupon = couponRepository.couponIssue(request.couponType, 1L)
+        couponHistoryRepository.couponHistoryAdd(coupon.couponType, coupon.count)
 
         val member = memberService.findByMember(request.memberSeq)
             .orElseThrow()
 
-
-        couponRepository.save(coupon)
-        couponHistoryRepository.save(CouponHistory(
-            couponType = coupon.couponType,
-            count = 1L
-        ))
-
-        val couponStorage = CouponStorage(
-            couponType = coupon.couponType,
-            createDt = LocalDateTime.now(),
-            useYn = false,
-        )
-        couponStorage.member = member
-        couponStorageRepository.save(couponStorage)
+        couponStorageRepository.couponSave(coupon.couponType, member)
 
         return CouponIssueResponse(
             couponType = coupon.couponType,
@@ -72,23 +49,13 @@ class CouponServiceImpl(
         )
     }
 
-    override fun findByCouponStorageSeq(couponStorageSeq: Long): CouponStorageResponse {
-        return couponStorageRepository.findByIdAndUseYn(couponStorageSeq, false) .orElseThrow()
+    override fun findByCouponStorageSeq(couponStorageSeq: Long): CouponStorageResponse =
+        couponStorageRepository.findByCouponStorageSeq(couponStorageSeq)
             .let { CouponStorageResponse(
                 couponStorageSeq = it.id,
                 couponType = it.couponType
             ) }
-    }
 
-    override fun couponUse(couponStorageSeq: Long): CouponUseResponse {
-        return couponStorageRepository.findById(couponStorageSeq)
-            .orElseThrow()
-            .let {
-                it.couponUse()
-                CouponUseResponse(
-                    couponType = it.couponType,
-                    couponStorageSeq = it.id
-                )
-            }
-    }
+    override fun couponUse(couponStorageSeq: Long): CouponUseResponse =
+        couponStorageRepository.couponUse(couponStorageSeq)
 }

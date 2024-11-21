@@ -1,6 +1,9 @@
 package com.pay.core.domain.coupon.repository
 
-import org.springframework.data.jpa.repository.JpaRepository
+import com.pay.core.domain.coupon.repository.jpa.CouponHistory
+import com.pay.core.domain.type.CouponType
 
-interface CouponHistoryRepository:JpaRepository<CouponHistory, Long> {
+interface CouponHistoryRepository {
+
+    fun couponHistoryAdd(couponType: CouponType, count:Long):CouponHistory
 }
