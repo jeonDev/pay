@@ -6,7 +6,7 @@ enum class TransactionType {
     DEPOSIT {
         override fun calculation(balance: BigInteger, amount: BigInteger): BigInteger = balance.add(amount)
     }, WITHDRAW {
-        override fun calculation(balance: BigInteger, amount: BigInteger): BigInteger = balance.divide(amount)
+        override fun calculation(balance: BigInteger, amount: BigInteger): BigInteger = balance.subtract(amount)
     };
 
 
