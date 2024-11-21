@@ -32,13 +32,13 @@ class PaySendServiceImpl(
     @Transactional
     override fun send(request: PaySendRequest): PaySendResponse {
         log.info("송금 요청 : {} -> {} : ({}) {}", request.sendMemberSeq, request.receiveMemberSeq, request.amount, request.couponStorageSeq)
-        val sendAccount = accountService.findByMemberSeq(request.sendMemberSeq).orElseThrow()
+        val sendAccount = accountService.findByMemberSeq(request.sendMemberSeq)
 
         val feeAmount:BigInteger = getFeeAmount(request.couponStorageSeq, request.amount.toBigDecimal())
         val amount = request.amount.add(feeAmount)
         if (sendAccount.amount < amount) throw RuntimeException("잔액 부족")
 
-        val receiveAccount = accountService.findByMemberSeq(request.receiveMemberSeq).orElseThrow()
+        val receiveAccount = accountService.findByMemberSeq(request.receiveMemberSeq)
 
         val entity = paySendRepository.save(request.toEntity(sendAccount, receiveAccount, feeAmount))
 

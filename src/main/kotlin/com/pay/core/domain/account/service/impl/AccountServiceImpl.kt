@@ -1,8 +1,8 @@
 package com.pay.core.domain.account.service.impl
 
-import com.pay.core.domain.account.repository.Account
-import com.pay.core.domain.account.repository.AccountHistoryRepository
 import com.pay.core.domain.account.repository.AccountRepository
+import com.pay.core.domain.account.repository.jpa.Account
+import com.pay.core.domain.account.repository.jpa.AccountHistoryRepository
 import com.pay.core.domain.account.request.AccountCreateRequest
 import com.pay.core.domain.account.request.AccountTransactionRequest
 import com.pay.core.domain.account.response.AccountCreateResponse
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigInteger
 import java.time.LocalDateTime
-import java.util.*
 
 @Service
 class AccountServiceImpl(
@@ -29,7 +28,7 @@ class AccountServiceImpl(
     override fun create(request: AccountCreateRequest): AccountCreateResponse {
         log.info("계좌 생성 : {}", request.memberSeq)
         val member = memberService.findByMember(request.memberSeq).orElseThrow()
-        var account:Account = Account(
+        var account = Account(
             amount = BigInteger.ZERO,
             createDt = LocalDateTime.now()
         )
@@ -45,7 +44,7 @@ class AccountServiceImpl(
         log.info("계좌 입출금 : {} {} {} {} {}", request.memberSeq, request.amount, request.transactionType, request.payType, request.paySeq)
         val member = memberService.findByMember(request.memberSeq).orElseThrow()
 
-        val account = accountRepository.findByMember(member).orElseThrow()
+        val account = accountRepository.findByMemberLock(member)
 
         val accountHistory = account.transaction(request.transactionType, request.amount, request.payType, request.paySeq)
 
@@ -59,8 +58,9 @@ class AccountServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findByMemberSeq(memberSeq: Long): Optional<Account> {
+    override fun findByMemberSeq(memberSeq: Long): Account {
         val member = memberService.findByMember(memberSeq).orElseThrow()
-        return accountRepository.findByMember(member)
+        return accountRepository.findByMemberLock(member)
     }
+
 }

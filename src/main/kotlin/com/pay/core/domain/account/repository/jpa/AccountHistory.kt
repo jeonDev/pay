@@ -1,4 +1,4 @@
-package com.pay.core.domain.account.repository
+package com.pay.core.domain.account.repository.jpa
 
 import com.pay.core.domain.type.PayType
 import com.pay.core.domain.type.TransactionType

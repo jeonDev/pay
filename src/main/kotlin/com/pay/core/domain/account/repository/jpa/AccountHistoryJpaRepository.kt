@@ -1,4 +1,4 @@
-package com.pay.core.domain.account.repository
+package com.pay.core.domain.account.repository.jpa
 
 import org.springframework.data.jpa.repository.JpaRepository
 

@@ -1,4 +1,4 @@
-package com.pay.core.domain.account.repository
+package com.pay.core.domain.account.repository.jpa
 
 import com.pay.core.domain.member.repository.Member
 import com.pay.core.domain.type.PayType
@@ -29,7 +29,7 @@ data class Account (
     lateinit var member:Member
 
 
-    fun transaction(transactionType: TransactionType, amount:BigInteger, payType: PayType, paySeq:Long?):AccountHistory {
+    fun transaction(transactionType: TransactionType, amount:BigInteger, payType: PayType, paySeq:Long?): AccountHistory {
         this.amount = transactionType.calculation(this.amount, amount)
         if (this.amount < BigInteger.ZERO) throw RuntimeException()
 

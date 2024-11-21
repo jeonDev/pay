@@ -1,6 +1,6 @@
 package com.pay.core.domain.pay.repository
 
-import com.pay.core.domain.account.repository.Account
+import com.pay.core.domain.account.repository.jpa.Account
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.DynamicUpdate
@@ -26,9 +26,9 @@ data class PaySend(
 ) {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SEND_ACCOUNT_SEQ")
-    lateinit var sendAccount:Account
+    lateinit var sendAccount: Account
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RECEIVE_ACCOUNT_SEQ")
-    lateinit var receiveAccount:Account
+    lateinit var receiveAccount: Account
 }
