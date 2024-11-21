@@ -20,19 +20,12 @@ class FeeServiceImpl(
     @Transactional
     override fun create(request: FeeCreateRequest) {
         log.info("수수료 정책 추가 : {} {} {}", request.feeType, request.feeWay, request.fee)
-        val optionalFee = feeRepository.findByFeeTypeAndUseYn(request.feeType, true)
-        if (optionalFee.isPresent) {
-            val fee = optionalFee.get()
-            fee.update(request.feeWay, request.fee)
-            feeRepository.save(fee)
-        } else {
-            feeRepository.save(request.toEntity())
-        }
+        feeRepository.create(request.feeType, request.feeWay, request.fee)
     }
 
     override fun findFeeAmount(feeType: FeeType, amount: BigDecimal): BigDecimal {
         log.info("수수료 가져오기 : {} {}", feeType, amount)
-        val optionalFee = feeRepository.findByFeeTypeAndUseYn(feeType, true)
+        val optionalFee = feeRepository.findByFeeType(feeType)
         if (optionalFee.isEmpty) return BigDecimal.ZERO
         val fee = optionalFee.get()
 

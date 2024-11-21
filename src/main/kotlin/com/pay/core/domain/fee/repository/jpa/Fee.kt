@@ -1,4 +1,4 @@
-package com.pay.core.domain.fee.repository
+package com.pay.core.domain.fee.repository.jpa
 
 import com.pay.core.domain.type.FeeType
 import com.pay.core.domain.type.FeeWay
