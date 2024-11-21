@@ -1,7 +1,7 @@
 package com.pay.core.domain.account.repository
 
 import com.pay.core.domain.account.repository.jpa.Account
-import com.pay.core.domain.member.repository.Member
+import com.pay.core.domain.member.repository.jpa.Member
 
 interface AccountRepository {
 

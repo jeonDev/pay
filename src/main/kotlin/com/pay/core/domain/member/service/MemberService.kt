@@ -1,6 +1,6 @@
 package com.pay.core.domain.member.service
 
-import com.pay.core.domain.member.repository.Member
+import com.pay.core.domain.member.repository.jpa.Member
 import com.pay.core.domain.member.request.MemberCreateRequest
 import com.pay.core.domain.member.response.MemberCreateResponse
 import java.util.Optional

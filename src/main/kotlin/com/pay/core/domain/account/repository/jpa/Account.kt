@@ -1,6 +1,6 @@
 package com.pay.core.domain.account.repository.jpa
 
-import com.pay.core.domain.member.repository.Member
+import com.pay.core.domain.member.repository.jpa.Member
 import com.pay.core.domain.type.PayType
 import com.pay.core.domain.type.TransactionType
 import jakarta.persistence.*
@@ -26,7 +26,7 @@ data class Account (
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_SEQ")
-    lateinit var member:Member
+    lateinit var member: Member
 
 
     fun transaction(transactionType: TransactionType, amount:BigInteger, payType: PayType, paySeq:Long?): AccountHistory {

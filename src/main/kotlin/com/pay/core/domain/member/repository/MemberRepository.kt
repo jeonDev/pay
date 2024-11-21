@@ -1,6 +1,9 @@
 package com.pay.core.domain.member.repository
 
-import org.springframework.data.jpa.repository.JpaRepository
+import com.pay.core.domain.member.repository.jpa.Member
+import java.util.Optional
 
-interface MemberRepository:JpaRepository<Member, Long> {
+interface MemberRepository {
+    fun create(name:String):Member
+    fun findById(id:Long): Optional<Member>
 }

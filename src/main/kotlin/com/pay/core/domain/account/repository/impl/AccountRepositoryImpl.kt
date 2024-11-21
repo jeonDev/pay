@@ -3,7 +3,7 @@ package com.pay.core.domain.account.repository.impl
 import com.pay.core.domain.account.repository.AccountRepository
 import com.pay.core.domain.account.repository.jpa.Account
 import com.pay.core.domain.account.repository.jpa.AccountJpaRepository
-import com.pay.core.domain.member.repository.Member
+import com.pay.core.domain.member.repository.jpa.Member
 import org.springframework.stereotype.Repository
 
 @Repository

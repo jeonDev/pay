@@ -1,6 +1,6 @@
 package com.pay.core.domain.coupon.repository.jpa
 
-import com.pay.core.domain.member.repository.Member
+import com.pay.core.domain.member.repository.jpa.Member
 import com.pay.core.domain.type.CouponType
 import jakarta.persistence.*
 import java.time.LocalDateTime
@@ -25,7 +25,7 @@ data class CouponStorage(
 ) {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_SEQ")
-    lateinit var member:Member
+    lateinit var member: Member
 
     fun couponUse() {
         if (this.useYn) throw RuntimeException()

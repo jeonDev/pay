@@ -4,7 +4,7 @@ import com.pay.core.domain.coupon.repository.CouponStorageRepository
 import com.pay.core.domain.coupon.repository.jpa.CouponStorage
 import com.pay.core.domain.coupon.repository.jpa.CouponStorageJpaRepository
 import com.pay.core.domain.coupon.response.CouponUseResponse
-import com.pay.core.domain.member.repository.Member
+import com.pay.core.domain.member.repository.jpa.Member
 import com.pay.core.domain.type.CouponType
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
