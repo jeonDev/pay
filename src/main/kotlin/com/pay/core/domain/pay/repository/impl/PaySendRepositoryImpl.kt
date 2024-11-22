@@ -4,6 +4,7 @@ import com.pay.core.domain.account.repository.jpa.Account
 import com.pay.core.domain.pay.repository.PaySendRepository
 import com.pay.core.domain.pay.repository.jpa.PaySend
 import com.pay.core.domain.pay.repository.jpa.PaySendJpaRepository
+import com.pay.core.domain.type.TransactionStatus
 import org.springframework.stereotype.Repository
 import java.math.BigInteger
 
@@ -15,10 +16,16 @@ class PaySendRepositoryImpl(
     override fun save(sendAccount: Account, receiveAccount: Account, amount:BigInteger, feeAmount: BigInteger): PaySend {
         val paySend = PaySend(
             amount = amount,
-            feeAmount = feeAmount
+            feeAmount = feeAmount,
+            transactionStatus = TransactionStatus.REQUEST
         )
         paySend.sendAccount = sendAccount
         paySend.receiveAccount = receiveAccount
         return paySendJpaRepository.save(paySend)
+    }
+
+    override fun statusUpdate(paySend: PaySend, transactionStatus: TransactionStatus) {
+        paySend.transactionStatus = transactionStatus
+        paySendJpaRepository.save(paySend)
     }
 }

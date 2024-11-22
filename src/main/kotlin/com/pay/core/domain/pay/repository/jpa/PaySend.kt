@@ -1,6 +1,7 @@
 package com.pay.core.domain.pay.repository.jpa
 
 import com.pay.core.domain.account.repository.jpa.Account
+import com.pay.core.domain.type.TransactionStatus
 import jakarta.persistence.*
 import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.DynamicUpdate
@@ -21,7 +22,11 @@ data class PaySend(
 
     @Column(name = "FEE_AMOUNT", nullable = false)
     @ColumnDefault("0")
-    var feeAmount:BigInteger
+    var feeAmount:BigInteger,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "TRANSACTION_STATUS")
+    var transactionStatus: TransactionStatus
 
 ) {
     @ManyToOne(fetch = FetchType.LAZY)

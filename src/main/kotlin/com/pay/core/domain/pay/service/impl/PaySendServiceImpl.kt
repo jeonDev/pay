@@ -6,12 +6,14 @@ import com.pay.core.domain.account.service.AccountService
 import com.pay.core.domain.coupon.service.CouponService
 import com.pay.core.domain.fee.service.FeeService
 import com.pay.core.domain.pay.repository.PaySendRepository
+import com.pay.core.domain.pay.repository.PaySendReservationRepository
 import com.pay.core.domain.pay.request.PaySendRequest
 import com.pay.core.domain.pay.response.PaySendResponse
 import com.pay.core.domain.pay.service.PaySendService
 import com.pay.core.domain.type.CouponType.FEE_AMOUNT_FREE
 import com.pay.core.domain.type.FeeType
 import com.pay.core.domain.type.PayType
+import com.pay.core.domain.type.TransactionStatus
 import com.pay.core.domain.type.TransactionType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,6 +25,7 @@ import java.math.BigInteger
 @Service
 class PaySendServiceImpl(
     val paySendRepository: PaySendRepository,
+    val paySendReservationRepository: PaySendReservationRepository,
     val accountService: AccountService,
     val feeService: FeeService,
     val couponService: CouponService
@@ -39,11 +42,17 @@ class PaySendServiceImpl(
         if (sendAccount.amount < amount) throw RuntimeException("잔액 부족")
 
         val receiveAccount = accountService.findByMemberSeq(request.receiveMemberSeq)
-
         val entity = paySendRepository.save(sendAccount, receiveAccount, request.amount, feeAmount)
 
         val sendAccountResponse = this.transaction(amount, TransactionType.WITHDRAW, request.sendMemberSeq, PayType.PAY_SEND, entity.id)
-        val receiveAccountResponse = this.transaction(request.amount, TransactionType.DEPOSIT, request.receiveMemberSeq, PayType.PAY_SEND, entity.id)
+
+        if (!request.isReservation) {
+            this.transaction(request.amount, TransactionType.DEPOSIT, request.receiveMemberSeq, PayType.PAY_SEND, entity.id)
+            paySendRepository.statusUpdate(entity, TransactionStatus.COMPLETE)
+        } else {
+            paySendRepository.statusUpdate(entity, TransactionStatus.SEND_COMPLETE)
+            request.paySendReservationRequest?.let { paySendReservationRepository.save(it.reservationDate, it.reservationTime, entity) }
+        }
 
         return PaySendResponse(
             success = true,
@@ -51,6 +60,14 @@ class PaySendServiceImpl(
             feeAmount = entity.feeAmount,
             balance = sendAccountResponse.balance
         )
+    }
+
+    override fun reservationSend() {
+        TODO("Not yet implemented")
+    }
+
+    override fun findByReservationTransaction() {
+        TODO("Not yet implemented")
     }
 
     private fun transaction(amount: BigInteger, transactionType: TransactionType, memberSeq:Long, payType:PayType, paySeq:Long?): AccountTransactionResponse {
