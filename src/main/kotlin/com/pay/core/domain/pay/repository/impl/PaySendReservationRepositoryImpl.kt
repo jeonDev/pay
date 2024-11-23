@@ -1,6 +1,7 @@
 package com.pay.core.domain.pay.repository.impl
 
 import com.pay.core.domain.pay.repository.PaySendReservationRepository
+import com.pay.core.domain.pay.repository.dto.PaySendReservationDto
 import com.pay.core.domain.pay.repository.jpa.PaySend
 import com.pay.core.domain.pay.repository.jpa.PaySendReservation
 import com.pay.core.domain.pay.repository.jpa.PaySendReservationJpaRepository
@@ -21,6 +22,6 @@ class PaySendReservationRepositoryImpl(
             paySend = paySend
         ))
 
-    override fun findByReservationPaySend(sendDate: String, sendTime: String): List<PaySend> =
+    override fun findByReservationPaySend(sendDate: String, sendTime: String): List<PaySendReservationDto> =
         paySendReservationJpaRepository.findByReservationPaySend(sendDate, sendTime, TransactionStatus.SEND_COMPLETE)
 }
