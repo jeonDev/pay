@@ -4,6 +4,7 @@ import com.pay.core.domain.pay.repository.PaySendReservationRepository
 import com.pay.core.domain.pay.repository.jpa.PaySend
 import com.pay.core.domain.pay.repository.jpa.PaySendReservation
 import com.pay.core.domain.pay.repository.jpa.PaySendReservationJpaRepository
+import com.pay.core.domain.type.TransactionStatus
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
@@ -20,4 +21,6 @@ class PaySendReservationRepositoryImpl(
             paySend = paySend
         ))
 
+    override fun findByReservationPaySend(sendDate: String, sendTime: String): List<PaySend> =
+        paySendReservationJpaRepository.findByReservationPaySend(sendDate, sendTime, TransactionStatus.SEND_COMPLETE)
 }

@@ -7,6 +7,7 @@ import com.pay.core.domain.coupon.service.CouponService
 import com.pay.core.domain.fee.service.FeeService
 import com.pay.core.domain.pay.repository.PaySendRepository
 import com.pay.core.domain.pay.repository.PaySendReservationRepository
+import com.pay.core.domain.pay.repository.jpa.PaySend
 import com.pay.core.domain.pay.request.PaySendRequest
 import com.pay.core.domain.pay.response.PaySendResponse
 import com.pay.core.domain.pay.service.PaySendService
@@ -66,9 +67,8 @@ class PaySendServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun findByReservationTransaction() {
-        TODO("Not yet implemented")
-    }
+    override fun findByReservationTransaction(sendDate:String, sendTime:String): List<PaySend> =
+        paySendReservationRepository.findByReservationPaySend(sendDate, sendTime)
 
     private fun transaction(amount: BigInteger, transactionType: TransactionType, memberSeq:Long, payType:PayType, paySeq:Long?): AccountTransactionResponse {
         val transactionRequest = AccountTransactionRequest(
