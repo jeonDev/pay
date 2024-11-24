@@ -27,5 +27,5 @@ interface PaySendReservationJpaRepository:JpaRepository<PaySendReservation, Long
     )
     fun findByReservationPaySend(@Param("sendDate") sendDate:String,
                                  @Param("sendTime") sendTime:String,
-                                 @Param("transactionStatus") transactionStatus: TransactionStatus): List<PaySendReservationDto>
+                                 @Param("transactionStatus") transactionStatus: String): List<PaySendReservationDto>
 }
