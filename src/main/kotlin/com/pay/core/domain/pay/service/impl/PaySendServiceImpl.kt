@@ -7,7 +7,6 @@ import com.pay.core.domain.coupon.service.CouponService
 import com.pay.core.domain.fee.service.FeeService
 import com.pay.core.domain.pay.repository.PaySendRepository
 import com.pay.core.domain.pay.repository.PaySendReservationRepository
-import com.pay.core.domain.pay.repository.dto.PaySendReservationDto
 import com.pay.core.domain.pay.request.PaySendRequest
 import com.pay.core.domain.pay.response.PaySendResponse
 import com.pay.core.domain.pay.service.PaySendService
@@ -63,12 +62,15 @@ class PaySendServiceImpl(
         )
     }
 
-    override fun reservationSend() {
-        TODO("Not yet implemented")
-    }
-
-    override fun findByReservationTransaction(sendDate:String, sendTime:String): List<PaySendReservationDto> =
+    @Transactional
+    override fun reservationSend(sendDate:String, sendTime:String) =
         paySendReservationRepository.findByReservationPaySend(sendDate, sendTime)
+            .forEach{
+                this.transaction(it.amount, TransactionType.DEPOSIT, it.receiveAccountSeq, PayType.PAY_SEND, it.paySendSeq)
+                paySendRepository.findById(it.paySendSeq)
+                    .orElseThrow()
+                    .let { paySendRepository.statusUpdate(it, TransactionStatus.COMPLETE) }
+            }
 
     private fun transaction(amount: BigInteger, transactionType: TransactionType, memberSeq:Long, payType:PayType, paySeq:Long?): AccountTransactionResponse {
         val transactionRequest = AccountTransactionRequest(

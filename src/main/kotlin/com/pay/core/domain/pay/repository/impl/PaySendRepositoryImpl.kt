@@ -7,6 +7,7 @@ import com.pay.core.domain.pay.repository.jpa.PaySendJpaRepository
 import com.pay.core.domain.type.TransactionStatus
 import org.springframework.stereotype.Repository
 import java.math.BigInteger
+import java.util.*
 
 @Repository
 class PaySendRepositoryImpl(
@@ -28,4 +29,8 @@ class PaySendRepositoryImpl(
         paySend.transactionStatus = transactionStatus
         paySendJpaRepository.save(paySend)
     }
+
+    override fun findById(paySendSeq: Long): Optional<PaySend> =
+        paySendJpaRepository.findById(paySendSeq)
+
 }

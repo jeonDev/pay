@@ -33,7 +33,7 @@ class PayApplicationTests {
         )
         paySendService.send(request)
 
-        val list = paySendService.findByReservationTransaction("20241124", "1100")
+        val list = paySendService.reservationSend("20241124", "1100")
         println(list.toString())
 
     }
